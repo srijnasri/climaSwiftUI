@@ -11,7 +11,7 @@ import SwiftUI
 struct climaSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(inputCityName: "delhi")
         }
     }
 }
