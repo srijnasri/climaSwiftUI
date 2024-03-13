@@ -28,19 +28,24 @@ class WeatherManager: ObservableObject {
         // create url
         
         if let url = URL(string: url) {
+            // dataTaskPublisher for getting data from given url
             URLSession.shared.dataTaskPublisher(for: url)
+            // filtering data from the result tuple
                 .map{ $0.data }
+            // decode using model
                 .decode(type: WeatherData.self, decoder: JSONDecoder())
+            // transforming data to viewmodel
                 .map { WeatherData -> WeatherViewModel? in
                     WeatherViewModel(conditionId: WeatherData.weather.first?.id ?? 0,
                                      cityName: WeatherData.name,
                                      temperature: WeatherData.main.temp)
                 }
                 .replaceError(with: nil)
+            // receiving data from the publisher on the main queue
                 .receive(on: DispatchQueue.main)
                 .assign(to: \.weatherModel, on: self)
+            // store reference of subscriptions for cancelling
                 .store(in: &cancellable)
-            print($weatherModel)
         }
     }
 }
