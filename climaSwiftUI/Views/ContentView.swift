@@ -10,20 +10,12 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var weatherManager = WeatherManager()
     @State var inputCityName: String
+    @State var isSearchOn: Bool = false
     
     var body: some View {
         let weatherModel = weatherManager.weatherModel
         
-        VStack {
-            TextField("Enter city name", text: $inputCityName)
-                .padding(10)
-                .background(.thinMaterial)
-                .border(.quaternary)
-                .padding(EdgeInsets(top: 50, leading: 10, bottom: 10, trailing: 10))
-                .disableAutocorrection(true)
-                .onSubmit {
-                    weatherManager.fetchData(city: inputCityName)
-                }
+        NavigationStack {
             Spacer()
             Image(systemName: weatherModel?.conditionName ?? "")
                 .imageScale(.large)
@@ -33,9 +25,16 @@ struct ContentView: View {
                         weatherModel?.temperatureString ?? ""))
             Spacer()
         }
+        .searchable(text: $inputCityName)
         .padding()
         .onAppear {
             weatherManager.fetchData(city: inputCityName)
+        }
+        .onChange(of: inputCityName) {
+            if !inputCityName.isEmpty {
+                weatherManager.fetchData(city: inputCityName)
+            } else {
+            }
         }
     }
 }
